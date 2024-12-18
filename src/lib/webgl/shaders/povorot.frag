@@ -1,0 +1,25 @@
+precision highp float;
+varying vec2 vUv;
+uniform sampler2D texture;
+uniform vec2 px;
+uniform float m[9];
+
+void main(void) {
+	// vec4 c11 = texture2D(texture, vUv - px);										// top left
+	// vec4 c12 = texture2D(texture, vec2(vUv.x, vUv.y - px.y));				// top center
+	// vec4 c13 = texture2D(texture, vec2(vUv.x + px.x, vUv.y - px.y));	// top right
+
+	// vec4 c21 = texture2D(texture, vec2(vUv.x - px.x, vUv.y) );			// mid left
+	vec4 c22 = texture2D(texture, vUv);											// mid center
+	// vec4 c23 = texture2D(texture, vec2(vUv.x + px.x, vUv.y) );			// mid right
+
+	// vec4 c31 = texture2D(texture, vec2(vUv.x - px.x, vUv.y + px.y) );	// bottom left
+	// vec4 c32 = texture2D(texture, vec2(vUv.x, vUv.y + px.y) );			// bottom center
+	// vec4 c33 = texture2D(texture, vUv + px );									// bottom right
+
+	gl_FragColor.r = c22.r * m[0] + c22.g * m[1] + c22.b * m[2];
+	gl_FragColor.g = c22.r * m[3] + c22.g * m[4] + c22.b * m[5];
+	gl_FragColor.b = c22.r * m[6] + c22.g * m[7] + c22.b * m[8];
+
+	gl_FragColor.a = c22.a;
+}

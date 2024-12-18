@@ -11,3 +11,6 @@
 Оптимизировано для точности: высокоточные матрицы цветового пространства
 Ориентирован на минимальный и современный набор цветовых пространств:
 xyz (D65), xyz-d50, oklab, oklch, okhsv, okhsl, srgb, srgb-linear, display-p3, display-p3-linear, rec2020, rec2020-linear, a98-rgb, a98-rgb-linear, prophoto-rgb, prophoto-rgb-linear
+
+
+https://www.shadertoy.com/view/WlGyDG

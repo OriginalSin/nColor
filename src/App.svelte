@@ -1,23 +1,73 @@
 <script>
+// @ts-nocheck
+
   	import { onMount } from 'svelte';
+  	import ImageTransform from './lib/webgl/ImageTransform.js';
 
     
-    import svetof from './assets/334.jpg'
-    // import svetof from './assets/svetof.png'
+    // import src from './assets/334_256.jpg'
+    // import src from './assets/334.jpg'
+    import src from './assets/svetof.png'
     import './assets/anticon.css'
   // import Counter from './lib/Counter.svelte'
 
   // import { gamutMapOKLCH, DisplayP3Gamut, sRGBGamut, OKLCH, serialize } from "@texel/color";
   import * as colors from "@texel/color";
 
-  let canva, image, timer, ctx, data, imageData, data1;
-  let delta = $state(0.012);
+  let imt, mainNode, canva, image, timer, ctx, data, imageData, data1;
+  let delta = $state(0.6);
+  let ugol = $state(Math.PI/4);
+  
   let points = $state([]);
 	let fillings = $state([]);
+  // let points = [];
 
+  const ARR = [
+    // 'perestanovka',
+    // 'perestanovka',
+    // 'perestanovka',
+    'povorot',
+    'perestanovka',
+    // 'povorot',
+
+    // 'detectEdges',
+    // 'main'
+  ];
+
+  const init = async (src) => {
+    const bitmap = await fetch(src).then(r=>r.blob()).then(createImageBitmap);
+    const {width, height} = bitmap;
+    const canvas = new OffscreenCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(bitmap, 0, 0);
+
+    // canva.width = width; canva.height = height;
+    // debugger
+    // ctx.setTransform(1, 0, 0, 1, canva.width * 0.5, canva.height * 0.5);
+    // ctx.rotate(options.rotation / 180 * Math.PI);
+    // ctx.scale(1.3, 1.3);
+    // ctx.drawImage(image, 0, 0);
+    // ctx.drawImage(img, -img.width * 0.5, -img.height * 0.5);
+    // ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
+    const imageData = ctx.getImageData(0, 0, width, height);
+    data = new Uint8Array(imageData.data.buffer);
+
+    imt = new ImageTransform({
+      bitmap,
+      canvas: canva,
+      data: {ugol},
+      arr: ARR
+    }); 
+    // debugger
+
+    update();
+    // debugger
+  }
   const imageOnLoad = (ev) => {
     image = ev.target;
-    update();
+    // update();
     // debugger
   }
   const onClick = (ev) => {
@@ -31,7 +81,7 @@
 
     let pos = width * y + x;
     let p = 4 * pos;
-    let rgb = [data1[p]/256, data1[p+1]/256, data1[p+2]/256];
+    let rgb = [data[p]/256, data[p+1]/256, data[p+2]/256];
     const lch = colors.convert(rgb, colors.sRGB, colors.OKLab);
     points.push({lch, x, y, pos});
     // console.log('points:', points, fillings)
@@ -42,17 +92,33 @@
 
   }
 onMount(() => {
-  ctx = canva.getContext('2d');
+  init(src);
   canva.addEventListener('mousedown', onClick);
-  // debugger
-  const lch = colors.convert([1, 0, 0], colors.sRGB, colors.OKLab);
 
-  // const t = serialize([1, 0, 0], OKLCH); // "oklch(1 0 0)"
-  console.log('lch:', lch);
-  update();
+  // glUtils.createGL({src, canvas: canva.transferControlToOffscreen()});
+
+  // ctx = canva.getContext('2d');
+  // canva.addEventListener('mousedown', onClick);
+  // // debugger
+  // const lch = colors.convert([1, 0, 0], colors.sRGB, colors.OKLab);
+
+  // // const t = serialize([1, 0, 0], OKLCH); // "oklch(1 0 0)"
+  // console.log('lch:', lch);
 });
 
 function update() {
+  const ar = ARR.filter(k => {
+    return fillings.indexOf(k) === -1 ? false : true;
+  })
+  console.log('ar', ar);
+  // debugger
+  imt.start([...ar, 'main'], {delta, ugol, points});
+
+}
+
+window.reDraw = update;
+
+function update1() {  // чисто без WebGL
     cancelAnimationFrame(timer);
     timer = requestAnimationFrame(function() {
         render();
@@ -109,15 +175,42 @@ function trace() {
   ctx.putImageData(imageData, 0, 0);        // synchronous
 
 }
+const changeImg = (ev) => {
+  const cls = mainNode.classList;
+  if (ev.target.checked) cls.add('imgOn');
+  else cls.remove('imgOn');
+}
+const changeCanv = (ev) => {
+  const cls = mainNode.classList;
+  if (ev.target.checked) cls.add('canvOn');
+  else cls.remove('canvOn');
+}
+
 </script>
 
-<main>
+<main bind:this={mainNode} class="imgOn canvOn">
 
   <div class="card">
-    <canvas bind:this={canva}></canvas>
+    <img onload={imageOnLoad} src={src} class="fromImg" alt="svetof" />
+    <canvas bind:this={canva} class="resCanvas"></canvas>
   </div>
   <div class="buttons">
-    <input on:change={update} bind:value={delta} class="delta" type="number" step="0.001" min="0" /> - предел
+    <input oninput={update} bind:value={ugol} class="ugol" type="range" step="0.1" min="0" max={2*Math.PI} /> - предел
+
+    <input onchange={update} bind:value={delta} class="delta" type="number" step="0.01" min="0" /> - предел
+    <fieldset>показать
+      <input type="checkbox" checked onchange={changeImg} /> - Image
+      <input type="checkbox" checked onchange={changeCanv} /> - Canvas
+    </fieldset>
+
+    <fieldset>Включать фильтры
+      {#each ARR as k}
+        {#if k !== 'main'}
+          <input onchange={update} type="checkbox" bind:group={fillings} value={k} /> - {k}
+        {/if}
+    {/each}
+    </fieldset>
+
     <button class="anticon anticon-info" aria-label="info"></button>
     <button class="anticon anticon-down-circle-o" aria-label="down"></button>
   </div>
@@ -125,13 +218,12 @@ function trace() {
   <details class="svetof" open>
     <summary>Точки</summary>
     <div class="card">
-      <img on:load={imageOnLoad} src={svetof} class="svetof" alt="svetof" />
     </div>
     <ul>
       {#each points as item, i}
         {@const chk = item.disable ? false : true}
 
-        <li><input on:change={(ev)=>{item.disable = !ev.checked; update();}} value="{i}" type="checkbox" checked={chk} /> {JSON.stringify(item)}</li>
+        <li><input onchange={(ev)=>{item.disable = !ev.checked; update();}} value="{i}" type="checkbox" checked={chk} /> {JSON.stringify(item)}</li>
       {/each}
     </ul>
 
@@ -152,14 +244,25 @@ function trace() {
 </main>
 
 <style>
-  /* main canvas {
-    width: 600px;
-    height: 600px;
-  } */
-  .card img {
-    display: none;
+  main.canvOn canvas.resCanvas {
+    opacity: 0.7;
+    /* opacity: 1; */
+
   }
+  main.imgOn img.fromImg {
+    opacity: 1;
+  }
+  main canvas.resCanvas ,
+  main img.fromImg {
+    opacity: 0;
+  }
+  .card canvas.resCanvas {
+    left: 0;
+    position: absolute;
+  }
+  
   .card {
+    position: relative;
     border: 1px solid;
     background-color: blue;
     width: fit-content;
