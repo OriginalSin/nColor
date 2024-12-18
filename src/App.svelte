@@ -8,8 +8,8 @@
     // import src from './assets/334_256.jpg'
     // import src from './assets/334.jpg'
     
-    import src from './assets/cleanColor.png'
-    // import src from './assets/svetof.png'
+    // import src from './assets/cleanColor.png'
+    import src from './assets/svetof.png'
     import './assets/anticon.css'
   // import Counter from './lib/Counter.svelte'
 
@@ -31,10 +31,10 @@
     // 'perestanovka',
     // 'perestanovka',
     // 'povorot',
-    'perestanovka',
-    'povorot',
+    // 'perestanovka',
+    // 'povorot',
 
-    // 'detectEdges',
+    'detectEdges',
     // 'main'
   ];
 
