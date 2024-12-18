@@ -242,6 +242,53 @@ const FILTERS = {
 				gl, attrs,
 				data={},
 			} = opt || {};
+			const matrixKind = eval(data.matrixKind) || [0, 1, 2];
+			debugger
+			console.log('perestanovka', matrixKind)
+			let matrix = [
+				[0,	0,	0],
+				[0,	0,	0],
+				[0,	0,	0]
+			];
+			matrix[0][matrixKind[0]] = 1;
+			matrix[1][matrixKind[1]] = 1;
+			matrix[2][matrixKind[2]] = 1;
+
+			// let matrix = [
+			// 	0,	1,	0, 		// r -> g
+			// 	1,	0,	0,		// g -> r
+			// 	0,	0,	1 		// b -> b
+			// ];
+			// if (matrixKind === 1) matrix = [
+			// 	1,	0,	0, 		// r -> r
+			// 	0,	0,	1,		// g -> b
+			// 	0,	1,	0 		// b -> g
+			// ];
+			// if (matrixKind === 2) matrix = [
+			// 	0,	0,	1, 		// r -> b
+			// 	0,	1,	0,		// g -> g
+			// 	1,	0,	0		// b -> r
+			// ];
+
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: POVOROT,
+		vert: MAIN_VERT,
+	},
+	perestanovka1: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+			} = opt || {};
 			// debugger
 			console.log('perestanovka')
 

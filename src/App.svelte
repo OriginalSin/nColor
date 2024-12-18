@@ -17,7 +17,8 @@
   let imt, mainNode, canva, image, timer, ctx, data, imageData, data1;
   let delta = $state(0.6);
   let ugol = $state(Math.PI/4);
-  
+  let matrixKind = $state([0, 1, 2]);
+    
   let points = $state([]);
 	let fillings = $state([]);
   // let points = [];
@@ -111,8 +112,9 @@ function update() {
     return fillings.indexOf(k) === -1 ? false : true;
   })
   console.log('ar', ar);
+  // const matrixKind = 1;
   // debugger
-  imt.start([...ar, 'main'], {delta, ugol, points});
+  imt.start([...ar, 'main'], {delta, ugol, matrixKind, points});
 
 }
 
@@ -196,6 +198,16 @@ const changeCanv = (ev) => {
   </div>
   <div class="buttons">
     <input oninput={update} bind:value={ugol} class="ugol" type="range" step="0.1" min="0" max={2*Math.PI} /> - предел
+    <input list="ice-cream-flavors" onchange={update} bind:value={matrixKind} class="matrixKind" type="text"  /> - matrixKind
+    <datalist id="ice-cream-flavors">
+      <option>[0, 1, 2]</option>
+      <option>[0, 2, 1]</option>
+      <option>[1, 0, 2]</option>
+      <option>[1, 2, 0]</option>
+      <option>[2, 0, 1]</option>
+      <option>[2, 1, 0]</option>
+
+    </datalist>
 
     <input onchange={update} bind:value={delta} class="delta" type="number" step="0.01" min="0" /> - предел
     <fieldset>показать
