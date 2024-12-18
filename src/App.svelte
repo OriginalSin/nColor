@@ -7,7 +7,9 @@
     
     // import src from './assets/334_256.jpg'
     // import src from './assets/334.jpg'
-    import src from './assets/svetof.png'
+    
+    import src from './assets/cleanColor.png'
+    // import src from './assets/svetof.png'
     import './assets/anticon.css'
   // import Counter from './lib/Counter.svelte'
 
@@ -18,6 +20,7 @@
   let delta = $state(0.6);
   let ugol = $state(Math.PI/4);
   let matrixKind = $state([0, 1, 2]);
+  let povKind = $state(0);
     
   let points = $state([]);
 	let fillings = $state([]);
@@ -27,22 +30,64 @@
     // 'perestanovka',
     // 'perestanovka',
     // 'perestanovka',
-    'povorot',
-    'perestanovka',
     // 'povorot',
+    'perestanovka',
+    'povorot',
 
     // 'detectEdges',
     // 'main'
   ];
 
   const init = async (src) => {
-    const bitmap = await fetch(src).then(r=>r.blob()).then(createImageBitmap);
+    let bitmap = await fetch(src).then(r=>r.blob()).then(createImageBitmap);
     const {width, height} = bitmap;
+    // debugger
     const canvas = new OffscreenCanvas(width, height);
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, width, height);
     ctx.drawImage(bitmap, 0, 0);
 
+/*
+    // const canvas = new OffscreenCanvas(width, height);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, width, height);
+    // ctx.drawImage(bitmap, 0, 0);
+    ctx.beginPath();
+    ctx.fillStyle="#ff0000";
+    ctx.fillRect(10, 10, 100, 100);
+    ctx.arc(180, 60, 50, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle="#00ff00";
+    ctx.fillRect(10, 120, 100, 100);
+    ctx.arc(180, 170, 50, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle="#0000ff";
+    ctx.fillRect(10, 250, 100, 100);
+    ctx.arc(180, 300, 50, 0, 2 * Math.PI);
+    ctx.fill();
+
+
+canvas.toBlob(function(blob) {
+  // после того, как Blob создан, загружаем его
+  let link = document.createElement('a');
+  link.download = 'example.png';
+
+  link.href = URL.createObjectURL(blob);
+  link.click();
+
+  // удаляем внутреннюю ссылку на Blob, что позволит браузеру очистить память
+  URL.revokeObjectURL(link.href);
+}, 'image/png');
+*/
+    // bitmap = canvas.transferToImageBitmap()
     // canva.width = width; canva.height = height;
     // debugger
     // ctx.setTransform(1, 0, 0, 1, canva.width * 0.5, canva.height * 0.5);
@@ -114,7 +159,7 @@ function update() {
   console.log('ar', ar);
   // const matrixKind = 1;
   // debugger
-  imt.start([...ar, 'main'], {delta, ugol, matrixKind, points});
+  imt.start([...ar, 'main'], {delta, ugol, matrixKind, povKind, points});
 
 }
 
@@ -214,6 +259,7 @@ const changeCanv = (ev) => {
       <input type="checkbox" checked onchange={changeImg} /> - Image
       <input type="checkbox" checked onchange={changeCanv} /> - Canvas
     </fieldset>
+    <input onchange={update} bind:value={povKind} class="povKind" type="number" step="1" min="0" max="2" /> - вариант поворота
 
     <fieldset>Включать фильтры
       {#each ARR as k}
@@ -276,7 +322,7 @@ const changeCanv = (ev) => {
   .card {
     position: relative;
     border: 1px solid;
-    background-color: blue;
+    background-color: gray;
     width: fit-content;
   }
   .delta {

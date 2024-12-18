@@ -206,29 +206,39 @@ const FILTERS = {
 			const {
 				gl, attrs,
 				data={ugol: Math.PI / 4.},
-				// matrix=[
-				// 	0, 1, 0,
-				// 	1, -4, 1,
-				// 	0, 1, 0
-				// ]
 			} = opt || {};
-			const ug = data.ugol;
+
+			const povKind = eval(data.povKind) || 0;
 			// debugger
+			const ug = data.ugol;
 			const cos = Math.cos(ug);
 			const sin = Math.sin(ug);
-			const matrix=[
+			let matrix = [
 				cos,	-sin,	0,
 				sin,	cos,	0,
 				0, 		0,		1
 			];
+			if (povKind === 1) {
+				matrix = [
+					1, 		0,		0,
+					0, 		cos,	-sin,
+					0,		sin,	cos
+				]
+			} else if (povKind===2) {
+				matrix = [
+					cos,	0,	sin,
+					0, 		1,	0,
+					-sin,	0,	cos
+				]
+			}
+
 			console.log('povorot', ug)
 
 			const {width, height} = data;
 			const m = new Float32Array(matrix);
 			const pixelSizeX = 1 / width;
 			const pixelSizeY = 1 / height;
-	
-			// var program = _compileShader(_filter.convolution.SHADER);
+
 			gl.uniform1fv(attrs.m.location, m);
 			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
 	
@@ -243,16 +253,17 @@ const FILTERS = {
 				data={},
 			} = opt || {};
 			const matrixKind = eval(data.matrixKind) || [0, 1, 2];
-			debugger
+			// debugger
 			console.log('perestanovka', matrixKind)
 			let matrix = [
-				[0,	0,	0],
-				[0,	0,	0],
-				[0,	0,	0]
+				0,	0,	0,
+				0,	0,	0,
+				0,	0,	0
 			];
-			matrix[0][matrixKind[0]] = 1;
-			matrix[1][matrixKind[1]] = 1;
-			matrix[2][matrixKind[2]] = 1;
+
+			matrix[matrixKind[0]] = 1;
+			matrix[3 + matrixKind[1]] = 1;
+			matrix[6 + matrixKind[2]] = 1;
 
 			// let matrix = [
 			// 	0,	1,	0, 		// r -> g
