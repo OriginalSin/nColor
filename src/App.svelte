@@ -32,9 +32,9 @@
     // 'perestanovka',
     // 'povorot',
     // 'perestanovka',
-    // 'povorot',
-
+    'grayscale',
     'detectEdges',
+    'nonMaximumSuppress',
     // 'main'
   ];
 
@@ -240,7 +240,180 @@ const changeCanv = (ev) => {
   <div class="card">
     <img onload={imageOnLoad} src={src} class="fromImg" alt="svetof" />
     <canvas bind:this={canva} class="resCanvas"></canvas>
+
   </div>
+  <details>
+    <summary>SVG</summary>
+    <div class="svg">
+      <svg width="500" height="335" viewBox="0 0 500 335">
+        <filter id="posterize">
+            <feComponentTransfer>
+              <feFuncR type="discrete" tableValues="0 .5 1" />
+              <!-- <feFuncG type="discrete" tableValues="0 .5 1" />
+              <feFuncB type="discrete" tableValues="0 1" /> -->
+            </feComponentTransfer>
+        </filter>
+    
+        <image xlink:href={src} width="100%" height="100%" x="0" y="0" 
+           filter="url(#posterize)"></image>
+    </svg>
+    </div>
+  </details>
+  <details>
+    <summary>feDisplacementMap</summary>
+    <div class="svg">
+      <svg width="500" height="335" viewBox="0 0 500 335">
+        <filter id="displacementFilter">
+          <!-- <feSpecularLighting in="SourceGraphic" result="light" lighting-color="white" surfaceScale="1" diffuseConstant="1" kernelUnitLength="2" specularExponent="5">
+            <fePointLight x="140" y="140" z="50" />
+          </feSpecularLighting>
+            
+          <feComposite in="SourceGraphic" in2="light" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" /> -->
+          <feComponentTransfer>
+            <feFuncR type="gamma" amplitude="0.5" exponent="0.3" offset="0.0" />
+            <feFuncG type="gamma" amplitude="0.75" exponent="0.5" offset="0.0" />
+            <feFuncB type="gamma" amplitude="1.5" exponent="0.7" offset="0.0" />
+            <feFuncA type="gamma" amplitude="1" exponent="1" offset="0.0" />
+          </feComponentTransfer>
+          <!-- <feComponentTransfer>
+            <feFuncG type="discrete" tableValues="0.0 0.15 0.8 1.0" />
+          </feComponentTransfer> -->
+          <!-- <feColorMatrix type="saturate"
+            values="0"
+            result="turbulence"
+
+          /> -->
+          <!-- <feColorMatrix type="luminanceToAlpha" /> -->
+          <!-- <feColorMatrix type="saturate" values="0" />
+          <feMorphology Operator="dilate" radius="3 2" /> -->
+          <!-- <feMorphology Operator="dilate" in="turbulence" radius="3 2" /> -->
+          <!-- <feComponentTransfer color-interpolation-filters="sRGB">
+            <feFuncR type="table" tableValues="0 1"/>
+            <feFuncG type="table" tableValues="0 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 1"/>
+            <feFuncB type="table" tableValues="0 1"/>
+          </feComponentTransfer> -->
+          <!-- <feDisplacementMap
+            in2="turbulence"
+            in="SourceGraphic"
+            scale="20"
+            xChannelSelector="A"
+            yChannelSelector="G"
+             /> -->
+        </filter>
+    
+        <image xlink:href={src} width="100%" height="100%" x="0" y="0" 
+           filter="url(#displacementFilter)"></image>
+    </svg>
+    </div>
+  </details>
+
+  <details>
+    <summary>SVG1</summary>
+    <div class="svg">
+      <svg width="300" height="300">
+        <defs>
+        <pattern id='puntos' x='0' y='0' width='40' height='40' overflow='visible' patternUnits="userSpaceOnUse">
+        <circle cx='10' cy='10' r='10' style='stroke:black;stroke-width:1;fill:red'/>
+        <circle cx='30' cy='30' r='10' height='20' style='stroke:black;stroke-width:1;fill:red'/>
+        </pattern>
+        <g id='img1'>
+        <rect x="0" y="0" width="300" height="300" fill="white"/>  
+        <rect x="0" y="0" width="300" height="300" fill="url(#puntos)"/>
+        </g>
+          
+        
+        <g id='img2'>
+        <circle cx="50%" cy="50%" r="50%" style="stroke:none;fill:red"/>
+        <circle cx="50%" cy="50%" r="45%" style="stroke:none;fill:white"/>
+        <circle cx="50%" cy="50%" r="40%" style="stroke:none;fill:red"/>
+        <circle cx="50%" cy="50%" r="35%" style="stroke:none;fill:white"/>
+        <circle cx="50%" cy="50%" r="30%" style="stroke:none;fill:red"/>
+        <circle cx="50%" cy="50%" r="25%" style="stroke:none;fill:white"/>
+        <circle cx="50%" cy="50%" r="20%" style="stroke:none;fill:red"/>
+        <circle cx="50%" cy="50%" r="15%" style="stroke:none;fill:white"/>
+        <circle cx="50%" cy="50%" r="10%" style="stroke:none;fill:red"/>
+        <circle cx="50%" cy="50%" r="5%" style="stroke:none;fill:white"/>
+        </g>
+        
+          
+        <radialGradient id="radialGradient" r=".7">  
+            <stop offset="0%" stop-color="#f00"></stop>
+            <stop offset="5%" stop-color="#fff"></stop>
+            <stop offset="10%" stop-color="#f00"></stop>
+            <stop offset="15%" stop-color="#fff"></stop>
+            <stop offset="20%" stop-color="#f00"></stop>
+            <stop offset="25%" stop-color="#fff"></stop>
+            <stop offset="30%" stop-color="#f00"></stop>
+            <stop offset="35%" stop-color="#fff"></stop>
+            <stop offset="40%" stop-color="#f00"></stop>
+            <stop offset="45%" stop-color="#fff"></stop> 
+            <stop offset="50%" stop-color="#f00"></stop>
+            <stop offset="55%" stop-color="#fff"></stop>
+            <stop offset="60%" stop-color="#f00"></stop>
+            <stop offset="65%" stop-color="#fff"></stop>
+            <stop offset="70%" stop-color="#f00"></stop>
+            <stop offset="75%" stop-color="#fff"></stop>
+            <stop offset="80%" stop-color="#f00"></stop>
+            <stop offset="85%" stop-color="#fff"></stop>
+            <stop offset="90%" stop-color="#f00"></stop>
+            <stop offset="95%" stop-color="#fff"></stop>
+            <stop offset="100%" stop-color="#f00"></stop>     
+        </radialGradient> 
+        
+        <rect id='img3' fill="url(#radialGradient)" width="300" height="300"></rect>
+          
+        <pattern id='deCuadros' x='0' y='0' width='40' height='40' overflow='visible' patternUnits="userSpaceOnUse">
+        <rect x='0' y='0' width='20' height='20' style='stroke:black;stroke-width:1;fill:red'/>
+        <rect x='20' y='20' width='20' height='20' style='stroke:black;stroke-width:1;fill:red'/>
+        </pattern>
+        <g id="img4">  
+        <rect x="0" y="0" width="300" height="300" fill="white"/>
+        <rect x="0" y="0" width="300" height="300" fill="url(#deCuadros)"/>
+        </g>  
+          
+          
+        <filter id="filter1" filterUnits="userSpaceOnUse" x="0" y="0" width="300" height="300">
+          <feImage xlink:href="data:image/svg+xml;utf8,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpattern id='Fpuntos' x='0' y='0' width='40' height='40' overflow='visible' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='10' style='stroke:black;stroke%2Dwidth:1;fill:red'/%3E%3Ccircle cx='30' cy='30' r='10' height='20' style='stroke:black;stroke%2Dwidth:1;fill:red'/%3E%3C/pattern%3E%3C/defs%3E%3Cg id='img1'%3E%3Crect x='0' y='0' width='300' height='300' fill='white'/%3E %3Crect x='0' y='0' width='300' height='300' fill='url(%23Fpuntos)'/%3E%3C/g%3E%3C/svg%3E" result='img1'/>
+          <feDisplacementMap scale="15" xChannelSelector="R" yChannelSelector="G" in2="img1" in="SourceGraphic"/>
+        </filter>
+        
+        <filter id="filter2" filterUnits="userSpaceOnUse" x="0" y="0" width="300" height="300">
+            <feImage xlink:href="data:image/svg+xml;utf8,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg %3E%3Ccircle cx='50%25' cy='50%25' r='50%25' style='stroke:none;fill:red'/%3E%3Ccircle cx='50%25' cy='50%25' r='45%25' style='stroke:none;fill:white'/%3E%3Ccircle cx='50%25' cy='50%25' r='40%25' style='stroke:none;fill:red'/%3E%3Ccircle cx='50%25' cy='50%25' r='35%25' style='stroke:none;fill:white'/%3E%3Ccircle cx='50%25' cy='50%25' r='30%25' style='stroke:none;fill:red'/%3E%3Ccircle cx='50%25' cy='50%25' r='25%25' style='stroke:none;fill:white'/%3E%3Ccircle cx='50%25' cy='50%25' r='20%25' style='stroke:none;fill:red'/%3E%3Ccircle cx='50%25' cy='50%25' r='15%25' style='stroke:none;fill:white'/%3E%3Ccircle cx='50%25' cy='50%25' r='10%25' style='stroke:none;fill:red'/%3E%3Ccircle cx='50%25' cy='50%25' r='5%25' style='stroke:none;fill:white'/%3E%3C/g%3E%3C/svg%3E" result='img2'/>
+            <feDisplacementMap scale="15" xChannelSelector="R" yChannelSelector="G" in2="img2" in="SourceGraphic"/>
+        </filter>
+      
+        <filter id="filter3" filterUnits="userSpaceOnUse" x="0" y="0" width="300" height="300">
+          <feImage xlink:href="data:image/svg+xml;utf8,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E %3CradialGradient id='FradialGradient' r='.7'%3E %3Cstop offset='0%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='5%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='10%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='15%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='20%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='25%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='30%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='35%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='40%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='45%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='50%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='55%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='60%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='65%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='70%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='75%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='80%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='85%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='90%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E%3Cstop offset='95%25' stop%2Dcolor='%23fff'%3E%3C/stop%3E%3Cstop offset='100%25' stop%2Dcolor='%23f00'%3E%3C/stop%3E %3C/radialGradient%3E%3C/defs%3E%3Crect fill='url(%23FradialGradient)' width='300' height='300'%3E%3C/rect%3E%3C/svg%3E" result='img3'/>
+          <feDisplacementMap scale="15" xChannelSelector="R" yChannelSelector="G" in2="img3" in="SourceGraphic"/>
+        </filter>
+      
+        <filter id="filter4" filterUnits="userSpaceOnUse" x="0" y="0" width="300" height="300">
+          <feImage xlink:href="data:image/svg+xml;utf8,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpattern id='FdeCuadros' x='0' y='0' width='40' height='40' overflow='visible' patternUnits='userSpaceOnUse'%3E%3Crect x='0' y='0' width='20' height='20' style='stroke:black;stroke%2Dwidth:1;fill:red'/%3E%3Crect x='20' y='20' width='20' height='20' style='stroke:black;stroke%2Dwidth:1;fill:red'/%3E%3C/pattern%3E%3Cg id='img4'%3E %3Crect x='0' y='0' width='300' height='300' fill='white'/%3E%3Crect x='0' y='0' width='300' height='300' fill='url(%23FdeCuadros)'/%3E%3C/g%3E%3C/svg%3E" result='img4'/>
+          <feDisplacementMap scale="15" xChannelSelector="R" yChannelSelector="G" in2="img4" in="SourceGraphic"/>
+        </filter>  
+          
+        </defs>
+          
+        <image xmlns:xlink={src} height="300" width="300" filter="url(#filter1)" />
+        <use xlink:href ="#img1" transform="scale(.25)" />
+      </svg>
+        
+          <svg width="300" height="300">
+           <image xmlns:xlink={src} height="300" width="300" filter="url(#filter2)" />
+          <use xlink:href ="#img2" transform="scale(.25)" />
+        </svg>
+          <svg width="300" height="300">
+           <image xmlns:xlink="{src}" height="300" width="300" filter="url(#filter3)" />
+          <use xlink:href ="#img3" transform="scale(.25)" />
+        </svg>
+          <svg width="300" height="300">
+           <image xmlns:xlink="{src}" height="300" width="300" filter="url(#filter4)" />
+          <use xlink:href ="#img4" transform="scale(.25)" />
+        </svg>
+    </div>
+  </details>
+
+
   <div class="buttons">
     <input oninput={update} bind:value={ugol} class="ugol" type="range" step="0.1" min="0" max={2*Math.PI} /> - предел
     <input list="ice-cream-flavors" onchange={update} bind:value={matrixKind} class="matrixKind" type="text"  /> - matrixKind

@@ -2,6 +2,9 @@ import glUtils from './glUtils.js';
 import MAIN_VERT from './shaders/main.vert';
 import MAIN_FRAG from './shaders/main.frag';
 import DETECT_EDGES from './shaders/detectEdges.frag';
+import GRAYSCALE from './shaders/grayscale.frag';
+import NONMaximumSuppress from './shaders/nonMaximumSuppress.frag';
+
 import RGB_ZAM from './shaders/rgbzam.frag';
 import POVOROT from './shaders/povorot.frag';
 
@@ -68,7 +71,7 @@ class ImageTransform {
 		data.height = gl.canvas.height;
 
 		const _this = this;
-// debugger
+debugger
 		this.convArr = names.map((name, nm) => {
 			const d = FILTERS[name];
 
@@ -177,7 +180,108 @@ const FILTERS = {
 		vert: MAIN_VERT,
 		frag: MAIN_FRAG,
 	},
+	grayscale: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: GRAYSCALE,
+		vert: MAIN_VERT,
+	},
+	grayscale1: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: GRAYSCALE,
+		vert: MAIN_VERT,
+	},
+	nonMaximumSuppress: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+			} = opt || {};
+			const {width, height} = data;
+
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: NONMaximumSuppress,
+		vert: MAIN_VERT,
+
+	},
 	detectEdges: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				m=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const mx = new Float32Array([
+				-1., 0., 1.,
+				-2., 0., 2.,
+				-1., 0., 1.
+			]);
+			const my = new Float32Array([
+				1., 2.,  1.,
+				0.,	0.,  0.,
+			   -1., -2., -1.
+			]);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			gl.uniform1fv(attrs.mx.location, mx);
+			gl.uniform1fv(attrs.my.location, my);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: DETECT_EDGES,
+		vert: MAIN_VERT,
+	},
+
+	detectEdges_: {
 		apply: (opt) => {
 			const {
 				gl, attrs,
@@ -201,6 +305,7 @@ const FILTERS = {
 		frag: DETECT_EDGES,
 		vert: MAIN_VERT,
 	},
+
 	povorot: {
 		apply: (opt) => {
 			const {

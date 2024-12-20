@@ -14,3 +14,7 @@ xyz (D65), xyz-d50, oklab, oklch, okhsv, okhsl, srgb, srgb-linear, display-p3, d
 
 
 https://www.shadertoy.com/view/WlGyDG
+
+https://fiveko.com/svg-filters-for-image-processing/
+https://habr.com/ru/articles/439874/
+https://gmshaders.com/glossary/ - GM Shaders

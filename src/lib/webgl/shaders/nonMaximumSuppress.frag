@@ -75,7 +75,7 @@ void main(void) {
 // edgeY += imgData.data[neighbors[i][j]] * OPERATORS[op]["y"][i][j];
 
 	float dm = roundDir(atan(edgeY, edgeX) * (180./PI));
-	float gm = floor(sqrt(edgeX * edgeX + edgeY * edgeY) / 128.);
+	float gm = floor(sqrt(edgeX * edgeX + edgeY * edgeY));
 // dirMap[current] = Helpers.roundDir(Math.atan2(edgeY, edgeX) * (180/Math.PI));;
 // gradMap[current] = Math.round(Math.sqrt(edgeX * edgeX + edgeY * edgeY));
 
