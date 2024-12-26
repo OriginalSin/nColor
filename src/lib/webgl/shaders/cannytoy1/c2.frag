@@ -12,16 +12,64 @@
  * [1] stduhpf's Canny filter (3pass): https://www.shadertoy.com/view/MsyXzt
  **/
 #iChannel0 "file://./c1b.frag"
+#include "./c1.glsl"
 
 #define A(X,Y) (tap(iChannel0,vec2(X,Y)))
 vec3 tap(sampler2D tex,vec2 xy) { return texture(tex,xy).xyz; }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-	vec2 uv = fragCoord.xy / iResolution.xy;
-    float dX = dFdx( texture(iChannel0, uv).r );
-    float dY = dFdy( texture(iChannel0, uv).r );
+#define FLT_MAX 3.402823466e+38
+#define FLT_MIN 1.175494351e-38
+
+float epsx = 0.1;
+float epsy = 0.1;
+int count = 0;
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    float minDx = FLT_MIN;
+    float maxDx = FLT_MAX;
+    float minDy = FLT_MIN;
+    float maxDy = FLT_MAX;
+
+    vec2 uv = fragCoord.xy / iResolution.xy;
+    float pr = texture(iChannel0, uv).r;
+    float dX = dFdx(pr);
+    float dY = dFdy(pr);
     float magnitude = length(vec2(dX, dY)); 
+
+    // for (int i = -count; i <= count; ++i) {
+    //     for (int j = -count; j <= count; ++j) {
+    //         if (i == 0 && j == 0) continue;
+    //         uv = (fragCoord.xy + vec2(i , j)) / iResolution.xy;
+    //         pr = texture(iChannel0, uv).r;
+    //         float dX1 = dFdx(pr);
+    //         float dY1 = dFdy(pr);
+    //         minDx = max(minDx, dX1);
+    //         maxDx = min(maxDx, dX1);
+    //         if (dX < (minDx - epsx) || dX > (maxDx + epsx)) {
+    //             fragColor = vec4(vec3(0.0), 1.0);
+    //             return;
+    //         }
+
+    //         minDy = max(minDy, dY1);
+    //         maxDy = min(maxDy, dY1);
+    //         // clamp(dY, minDy - 0.01, maxDy + 0.01);
+
+    //         if (dY < (minDy - epsy) || dY > (maxDy + epsy)) {
+    //             fragColor = vec4(vec3(0.0), 1.0);
+    //             return;
+    //         }
+
+    //     }
+    // }
+
+
+
+	// vec2 uv1x = (fragCoord.xy + vec2(1. , 0.)) / iResolution.xy;
+    // float p1r = texture(iChannel0, uv1x).r;
+    // float dX1 = dFdx(p1r);
+    // float dY1 = dFdy(p1r);
+
     vec3 col = vec3(dX / magnitude, dY / magnitude, magnitude); 
+    // vec3 col = vec3(dX / magnitude,dY / magnitude, 0.0); 
+    if (magnitude < level) col = vec3(0.0);
 	fragColor = vec4(col, 1.0);
 }

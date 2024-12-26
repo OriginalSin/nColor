@@ -21,7 +21,7 @@ http://duruofei.com/Public/course/CMSC733/Du_Ruofei_PS1.pdf
 #include "./c1.glsl"
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    vec3 col =pgause(fragCoord, 0);
+    vec3 col = pgause(fragCoord, 0);
 
     fragColor = vec4(col, 1.0);
 }

@@ -17,7 +17,7 @@
 #include "./c1.glsl"
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    vec3 col =pgause(fragCoord, 1);
+    vec3 col = pgause(fragCoord, 1);
 
     float gray = dot(col, vec3(0.2126, 0.7152, 0.0722));
     fragColor = vec4(vec3(gray), 1.0);
