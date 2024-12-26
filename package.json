@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@texel/color": "^1.1.4",
-    "earcut": "^3.0.0"
+    "earcut": "^3.0.0",
+    "glsl-fast-gaussian-blur": "^1.0.2"
   }
 }

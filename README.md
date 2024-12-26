@@ -18,3 +18,5 @@ https://www.shadertoy.com/view/WlGyDG
 https://fiveko.com/svg-filters-for-image-processing/
 https://habr.com/ru/articles/439874/
 https://gmshaders.com/glossary/ - GM Shaders
+
+https://www.shadertoy.com/view/Xly3DV

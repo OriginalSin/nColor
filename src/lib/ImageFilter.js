@@ -532,6 +532,16 @@ const ImageFilter = function (params) {
 			-1, 0, 1
 		]);
 	};
+	// matrix_X = [
+	// 	-1, 0, 1,
+	// 	-2, 0, 2,
+	// 	-1, 0, 1
+	// ],
+	// matrix_Y = [
+	// 	1, 2, 1,
+	// 	0, 0, 0,
+	// 	-1, -2, -1
+	// ],
 
 	_filter.sobelY = function() {
 		_filter.convolution.call(this, [

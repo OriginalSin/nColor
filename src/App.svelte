@@ -5,11 +5,12 @@
   	import ImageTransform from './lib/webgl/ImageTransform.js';
 
     
+    import src from './assets/example.jpg'
     // import src from './assets/334_256.jpg'
     // import src from './assets/334.jpg'
     
     // import src from './assets/cleanColor.png'
-    import src from './assets/svetof.png'
+    // import src from './assets/svetof.png'
     import './assets/anticon.css'
   // import Counter from './lib/Counter.svelte'
 
@@ -27,14 +28,18 @@
   // let points = [];
 
   const ARR = [
-    // 'perestanovka',
-    // 'perestanovka',
+    'cx',
+    'cy',
+    'c2',
+
     // 'perestanovka',
     // 'povorot',
     // 'perestanovka',
-    'grayscale',
-    'detectEdges',
-    'nonMaximumSuppress',
+    // 'grayscale',
+    // 'cannyEdgeDetection',
+    // 'intensityGradient',
+    // 'detectEdges',
+    // 'nonMaximumSuppress',
     // 'main'
   ];
 

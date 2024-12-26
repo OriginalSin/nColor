@@ -5,8 +5,15 @@ import DETECT_EDGES from './shaders/detectEdges.frag';
 import GRAYSCALE from './shaders/grayscale.frag';
 import NONMaximumSuppress from './shaders/nonMaximumSuppress.frag';
 
+import CX from './shaders/canny/cx.frag';
+import CY from './shaders/canny/cy.frag';
+import C2 from './shaders/canny/c2.frag';
+
+
 import RGB_ZAM from './shaders/rgbzam.frag';
 import POVOROT from './shaders/povorot.frag';
+import cannyEdgeDetection from './shaders/canny/res.glsl';
+import intensityGradient from './shaders/intensityGradient.glsl';
 
 import Program from './Program';
 import Texture from './Texture';
@@ -60,7 +67,7 @@ class ImageTransform {
 		// this.clipPolygon = clipPolygon;
 		this.texture = new Texture(opt);
 
-		this.start(arr, opt.data);
+		// this.start(arr, opt.data);
 
 	}
 
@@ -71,7 +78,7 @@ class ImageTransform {
 		data.height = gl.canvas.height;
 
 		const _this = this;
-debugger
+
 		this.convArr = names.map((name, nm) => {
 			const d = FILTERS[name];
 
@@ -111,7 +118,7 @@ debugger
 
 			d.apply({gl, attrs, data})
 
-			return {name, p, attrs};
+			return {name, p, attrs, past: d.past};
 		})
 		_this.draw();
 		return
@@ -127,28 +134,40 @@ debugger
 		// 	flipY = false;
 		// debugger
 
+		let source = texture.screenTexture;
 		const lastNm = convArr.length - 1;
+		let curFbNum = -1;
+		let fboLink;
 		convArr.forEach((c, cbIndex)=>{
-			const {name, p, attrs} = c;
+			const {name, p, attrs, past} = c;
 			gl.useProgram(p);
 			const dc = cbIndex % 2;
-			const fboLink = glUtils.getTempFramebuffer({dc, gl, width, height});
-			let source = texture.screenTexture;
-			let target = fboLink.fbo;
-			if (dc) {
-				source = fboLink.texture;
+			if (cbIndex) {
+				source = glUtils.getTempFramebuffer({curFbNum, gl, width, height}).texture;
 			}
+
+			// const fboLink = glUtils.getTempFramebuffer({curFbNum, gl, width, height});
+			let target = null;
+
+			if (cbIndex !== lastNm) {
+				curFbNum = (curFbNum + 1) % 2;
+				fboLink = glUtils.getTempFramebuffer({curFbNum, gl, width, height});
+				target = fboLink.fbo;
+
+	
+			}
+
 			gl.bindTexture(gl.TEXTURE_2D, source);
-
-			if (cbIndex === lastNm) {
-				target = null;
-
-			}
-
 			gl.bindFramebuffer(gl.FRAMEBUFFER, target);
-			gl.uniform1f(attrs.flipY.location, dc ? -1 : 1 );
+			gl.uniform1f(attrs.flipY.location, cbIndex === lastNm ? 1 : -1 );
 			gl.drawArrays(gl.TRIANGLES, 0, 6);		// draw the triangles
-			if (target) source = target.texture;
+			
+			if (past && cbIndex === lastNm) {
+				gl.flush();
+
+				let pd = past({gl, width, height});
+			}
+			// if (target) source = fboLink.texture;
 		})
 		// return this.texture.getUrl(url);
 	}
@@ -179,7 +198,95 @@ const FILTERS = {
 		},
 		vert: MAIN_VERT,
 		frag: MAIN_FRAG,
+		past: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				width, height
+			} = opt || {};
+			// const {width, height} = data;
+			// let pData = new Float32Array(width * height);
+			// gl.readPixels(0, 0, width, height, gl.RGBA, gl.FLOAT, pData);
+			let pData = new Uint8Array(width * height * 4);
+			gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pData);
+console.log('pData', pData)
+		}
 	},
+	cx: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: CX,
+		vert: MAIN_VERT,
+	},
+	cy: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: CY,
+		vert: MAIN_VERT,
+
+	},
+	c2: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: C2,
+		vert: MAIN_VERT,
+
+	},
+
 	grayscale: {
 		apply: (opt) => {
 			const {
@@ -203,8 +310,10 @@ const FILTERS = {
 		},
 		frag: GRAYSCALE,
 		vert: MAIN_VERT,
+
 	},
-	grayscale1: {
+
+	intensityGradient: {
 		apply: (opt) => {
 			const {
 				gl, attrs,
@@ -225,7 +334,31 @@ const FILTERS = {
 			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
 	
 		},
-		frag: GRAYSCALE,
+		frag: intensityGradient,
+		vert: MAIN_VERT,
+	},
+	cannyEdgeDetection: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+	
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+	
+		},
+		frag: cannyEdgeDetection,
 		vert: MAIN_VERT,
 	},
 	nonMaximumSuppress: {

@@ -17,6 +17,7 @@
 // console.log('gmxWebGL', PolylineRender, gmxWebGL);
 // let tileRender = new PolylineRender();
 
+// const glOpts = { antialias: true, depth: false };
 const glOpts = { antialias: true, depth: false, preserveDrawingBuffer: true };
 // const glOpts = { antialias: true, depth: false, preserveDrawingBuffer: true };
 // const qualityOptions = { anisotropicFiltering: true, mipMapping: true, linearFiltering: true };
@@ -39,6 +40,8 @@ const glUtils = {
 		const out = {gl};
 		if(gl) {
 			_anisoExt =
+gl.getExtension("OES_standard_derivatives") ||
+gl.getExtension("EXT_shader_texture_lod") ||
 				gl.getExtension('EXT_texture_filter_anisotropic') ||
 				gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
 				gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
@@ -210,12 +213,12 @@ const glUtils = {
 	// },
 
 	getTempFramebuffer: (opt) => {
-		const {cbIndex, gl, width, height} = opt;
-		_tempFramebuffers[cbIndex] = 
-			_tempFramebuffers[cbIndex] || 
+		const {curFbNum, gl, width, height} = opt;
+		_tempFramebuffers[curFbNum] = 
+			_tempFramebuffers[curFbNum] || 
 			glUtils.createFramebufferTexture(opt);
 
-		return _tempFramebuffers[cbIndex];
+		return _tempFramebuffers[curFbNum];
 	},
 
 	createFramebufferTexture: (opt) => {

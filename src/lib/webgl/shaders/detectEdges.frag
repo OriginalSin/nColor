@@ -76,6 +76,7 @@ void main(void) {
 
 	float dm = roundDir(atan(edgeY, edgeX) * (180./PI));
 	float gm = floor(sqrt(edgeX * edgeX + edgeY * edgeY) / 128.);
+	// float gm = floor(sqrt(edgeX * edgeX + edgeY * edgeY) / 1000.);
 // dirMap[current] = Helpers.roundDir(Math.atan2(edgeY, edgeX) * (180/Math.PI));;
 // gradMap[current] = Math.round(Math.sqrt(edgeX * edgeX + edgeY * edgeY));
 
@@ -83,11 +84,11 @@ void main(void) {
 	// 	c11 * mx[0] + c12 * mx[1] + c13 * mx[2] +
 	// 	c21 * mx[3] + c22 * mx[4] + c23 * mx[5] +
 	// 	c31 * mx[6] + c32 * mx[7] + c33 * mx[8];
-	gl_FragColor = c22;
+	gl_FragColor.r = c22.r;
 	gl_FragColor.g = dm; // направление
 	gl_FragColor.b = gm; // градиент
 
-	// gl_FragColor.a = c22.a;
+	gl_FragColor.a = c22.a;
 }
 
 
