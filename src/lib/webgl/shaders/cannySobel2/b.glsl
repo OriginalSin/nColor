@@ -27,12 +27,12 @@ vec2 sobel(sampler2D channel, ivec2 coord) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec4 Color = vec4(sobel(iChannel1, ivec2(fragCoord)).x,sobel(iChannel1, ivec2(fragCoord)).y,0.,0.);
-    if(iMouse.z>0.){
-    Color.x*=iMouse.x/iResolution.x;
-    Color.y*=iMouse.y/iResolution.y;
-    }else{
-    Color.x*=cos(iTime)*1.2;
-    Color.y*=sin(iTime)*1.2;
+    if(iMouse.z>0.) {
+        Color.x *= iMouse.x/iResolution.x;
+        Color.y *= iMouse.y/iResolution.y;
+    } else{
+        Color.x *= cos(iTime)*1.2;
+        Color.y *= sin(iTime)*1.2;
     }
     fragColor=Color;
 }

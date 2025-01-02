@@ -20,3 +20,5 @@ https://habr.com/ru/articles/439874/
 https://gmshaders.com/glossary/ - GM Shaders
 
 https://www.shadertoy.com/view/Xly3DV
+
+https://iquilezles.org/articles/

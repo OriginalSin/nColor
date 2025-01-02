@@ -73,10 +73,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec2 texel = 1.0 / iResolution.xy; // Size of one texel in UV space
 
     // Convert the image to grayscale (to simplify processing)
-    vec3 gray = toGrayscale(texture(iChannel0, uv).rgb);
+    //vec3 gray = toGrayscale(texture(iChannel0, uv).rgb);
 
     // Apply Gaussian Blur (for simplicity, we use a basic 3x3 filter here)
-    vec3 blurred = gaussianBlur(uv, texel);
+    // vec3 blurred = gaussianBlur(uv, texel);
 
     // Compute the gradient using Sobel operator
     vec2 grad = sobelGradient(uv, texel);

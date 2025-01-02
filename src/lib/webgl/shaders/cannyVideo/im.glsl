@@ -1,7 +1,8 @@
-// fork from https://www.shadertoy.com/view/sdcSz2 
-#iChannel0 "file://../../../../assets/334.jpg"
+// ref: (in japanese)
+// https://imagingsolution.net/imaging/canny-edge-detector/
+#define tickness 4.
 
-#define tickness 1.
+#iChannel0 "file://../../../../assets/334.jpg"
 
 float getAve(vec2 uv){
     vec3 rgb = texture(iChannel0, uv).rgb;
@@ -11,7 +12,7 @@ float getAve(vec2 uv){
 
 // Detect edge.
 vec4 sobel(vec2 fragCoord, vec2 dir){
-   // vec4 mous = iMouse/iResolution.xyxy*.1;
+    vec4 mous = iMouse/iResolution.xyxy*.1;
     vec2 uv = fragCoord/iResolution.xy;
     vec2 texel = 1./iResolution.xy;
     float np = getAve(uv + (vec2(-1,+1) + dir ) * texel * tickness);
@@ -84,15 +85,15 @@ float cannyEdge(vec2 fragCoord, float mn, float mx){
     // np zp pp
     // nz zz pz
     // nn zn pn
-    //return min(1., step(1e-3, zz.x) * (zp.y + nz.y + pz.y + zn.y)*8.);
-    //return min(1., step(1e-3, zz.x) * (np.y + pp.y + nn.y + pn.y)*8.);
+    // return min(1., step(1e-3, zz.x) * (zp.y + nz.y + pz.y + zn.y)*8.);
+    // return min(1., step(1e-3, zz.x) * (np.y + pp.y + nn.y + pn.y)*8.);
     return min(1., step(1e-2, zz.x*8.) * smoothstep(.0, .3, np.y + zp.y + pp.y + nz.y + pz.y + nn.y + zn.y + pn.y)*8.);
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ){
-    vec4 mous = iMouse/iResolution.xyxy * .05;
-    float edge = cannyEdge(fragCoord, mous.x*15., mous.y*90.);
+    vec4 mous = iMouse / iResolution.xyxy *.1;
+    float edge = cannyEdge(fragCoord, mous.x*5., mous.y*30.);
     
-    vec3 col = mix(vec3(1.0), vec3(0.0), 1.-edge);    
+    vec3 col = mix(vec3(0.875,0.835,0.749), vec3(0.145,0.118,0.055), 1.-edge);    
     fragColor = vec4(col,1.0);
 }

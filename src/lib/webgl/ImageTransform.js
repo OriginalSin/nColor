@@ -1,6 +1,10 @@
 import glUtils from './glUtils.js';
+import tracePath from '../../msqr/msqr.js';
+
 import MAIN_VERT from './shaders/main.vert';
 import MAIN_FRAG from './shaders/main.frag';
+import CANNY from './shaders/cannyVideo/canny.frag';
+
 import DETECT_EDGES from './shaders/detectEdges.frag';
 import GRAYSCALE from './shaders/grayscale.frag';
 import NONMaximumSuppress from './shaders/nonMaximumSuppress.frag';
@@ -120,14 +124,14 @@ class ImageTransform {
 
 			return {name, p, attrs, past: d.past};
 		})
-		_this.draw();
+		_this.draw(data);
 		return
 	}
 
-	draw() {
+	draw(data={}) {
         const {gl, convArr, texture, delta} = this;
         const {width, height} = texture.bitmap;
-
+const startXY = data.startXY;
 		// let source = texture.screenTexture; // 
 		// var source = null, 
 		// 	target = null,
@@ -165,7 +169,7 @@ class ImageTransform {
 			if (past && cbIndex === lastNm) {
 				gl.flush();
 
-				let pd = past({gl, width, height});
+				let pd = past({gl, width, height, startXY});
 			}
 			// if (target) source = fboLink.texture;
 		})
@@ -202,6 +206,7 @@ const FILTERS = {
 			const {
 				gl, attrs,
 				data={},
+				startXY,
 				width, height
 			} = opt || {};
 			// const {width, height} = data;
@@ -209,8 +214,35 @@ const FILTERS = {
 			// gl.readPixels(0, 0, width, height, gl.RGBA, gl.FLOAT, pData);
 			let pData = new Uint8Array(width * height * 4);
 			gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pData);
-console.log('pData', pData)
+			let path = tracePath({buf: pData.buffer, width, height, startXY});
+
+console.log('pData', path, opt, pData)
 		}
+	},
+	canny: {
+		apply: (opt) => {
+			const {
+				gl, attrs,
+				data={},
+				matrix=[
+					0, 1, 0,
+					1, -4, 1,
+					0, 1, 0
+				]
+			} = opt || {};
+			const {width, height, min=0, max=1} = data;
+			const m = new Float32Array(matrix);
+			const pixelSizeX = 1 / width;
+			const pixelSizeY = 1 / height;
+// debugger
+			// var program = _compileShader(_filter.convolution.SHADER);
+			// gl.uniform1fv(attrs.m.location, m);
+			gl.uniform2f(attrs.px.location, pixelSizeX, pixelSizeY);
+			gl.uniform2f(attrs.minmax.location, min, max);
+	
+		},
+		frag: CANNY,
+		vert: MAIN_VERT,
 	},
 	cx: {
 		apply: (opt) => {

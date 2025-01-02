@@ -5,8 +5,8 @@
   	import ImageTransform from './lib/webgl/ImageTransform.js';
 
     
-    import src from './assets/example.jpg'
-    // import src from './assets/334_256.jpg'
+    // import src from './assets/example.jpg'
+    import src from './assets/334_256.jpg'
     // import src from './assets/334.jpg'
     
     // import src from './assets/cleanColor.png'
@@ -17,7 +17,11 @@
   // import { gamutMapOKLCH, DisplayP3Gamut, sRGBGamut, OKLCH, serialize } from "@texel/color";
   import * as colors from "@texel/color";
 
-  let imt, mainNode, canva, image, timer, ctx, data, imageData, data1;
+  let imt, mainNode, canva, image, timer, ctx, data, imageData, data1, startXY;
+  let cwidth = $state(1);
+  let cheight = $state(1);
+  let min = $state(0);
+  let max = $state(100);
   let delta = $state(0.6);
   let ugol = $state(Math.PI/4);
   let matrixKind = $state([0, 1, 2]);
@@ -28,9 +32,9 @@
   // let points = [];
 
   const ARR = [
-    'cx',
-    'cy',
-    'c2',
+    'canny',
+    // 'cy',
+    // 'c2',
 
     // 'perestanovka',
     // 'povorot',
@@ -50,6 +54,10 @@
     const canvas = new OffscreenCanvas(width, height);
     const ctx = canvas.getContext('2d');
     ctx.drawImage(bitmap, 0, 0);
+    cwidth = width;
+    cheight = height;
+    max = cheight / 2;
+    console.log('cheight1:', cheight);
 
 /*
     // const canvas = new OffscreenCanvas(width, height);
@@ -124,7 +132,7 @@ canvas.toBlob(function(blob) {
   const onClick = (ev) => {
     const {offsetX:x, offsetY:y} = ev;
     const {width, height} = canva;
-
+startXY = {x, y};
     // const imageData1 = ctx.getImageData(0, 0, width, height);
     // let data = new Uint8Array(imageData1.data.buffer);
 
@@ -145,6 +153,8 @@ canvas.toBlob(function(blob) {
 onMount(() => {
   init(src);
   canva.addEventListener('mousedown', onClick);
+  //  console.log('cheight:', cheight);
+  //  debugger
 
   // glUtils.createGL({src, canvas: canva.transferControlToOffscreen()});
 
@@ -164,7 +174,8 @@ function update() {
   console.log('ar', ar);
   // const matrixKind = 1;
   // debugger
-  imt.start([...ar, 'main'], {delta, ugol, matrixKind, povKind, points});
+  // imt.start([...ar, 'main'], {min: min * 5, max: max * 30, delta, ugol, matrixKind, povKind, points});
+  imt.start([...ar, 'main'], {min, max, delta, startXY, matrixKind, povKind, points});
 
 }
 
@@ -247,67 +258,21 @@ const changeCanv = (ev) => {
     <canvas bind:this={canva} class="resCanvas"></canvas>
 
   </div>
-  <details>
+  
+  <!-- <details>
     <summary>SVG</summary>
     <div class="svg">
       <svg width="500" height="335" viewBox="0 0 500 335">
         <filter id="posterize">
             <feComponentTransfer>
               <feFuncR type="discrete" tableValues="0 .5 1" />
-              <!-- <feFuncG type="discrete" tableValues="0 .5 1" />
-              <feFuncB type="discrete" tableValues="0 1" /> -->
+              <feFuncG type="discrete" tableValues="0 .5 1" />
+              <feFuncB type="discrete" tableValues="0 1" />
             </feComponentTransfer>
         </filter>
     
         <image xlink:href={src} width="100%" height="100%" x="0" y="0" 
            filter="url(#posterize)"></image>
-    </svg>
-    </div>
-  </details>
-  <details>
-    <summary>feDisplacementMap</summary>
-    <div class="svg">
-      <svg width="500" height="335" viewBox="0 0 500 335">
-        <filter id="displacementFilter">
-          <!-- <feSpecularLighting in="SourceGraphic" result="light" lighting-color="white" surfaceScale="1" diffuseConstant="1" kernelUnitLength="2" specularExponent="5">
-            <fePointLight x="140" y="140" z="50" />
-          </feSpecularLighting>
-            
-          <feComposite in="SourceGraphic" in2="light" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" /> -->
-          <feComponentTransfer>
-            <feFuncR type="gamma" amplitude="0.5" exponent="0.3" offset="0.0" />
-            <feFuncG type="gamma" amplitude="0.75" exponent="0.5" offset="0.0" />
-            <feFuncB type="gamma" amplitude="1.5" exponent="0.7" offset="0.0" />
-            <feFuncA type="gamma" amplitude="1" exponent="1" offset="0.0" />
-          </feComponentTransfer>
-          <!-- <feComponentTransfer>
-            <feFuncG type="discrete" tableValues="0.0 0.15 0.8 1.0" />
-          </feComponentTransfer> -->
-          <!-- <feColorMatrix type="saturate"
-            values="0"
-            result="turbulence"
-
-          /> -->
-          <!-- <feColorMatrix type="luminanceToAlpha" /> -->
-          <!-- <feColorMatrix type="saturate" values="0" />
-          <feMorphology Operator="dilate" radius="3 2" /> -->
-          <!-- <feMorphology Operator="dilate" in="turbulence" radius="3 2" /> -->
-          <!-- <feComponentTransfer color-interpolation-filters="sRGB">
-            <feFuncR type="table" tableValues="0 1"/>
-            <feFuncG type="table" tableValues="0 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 1"/>
-            <feFuncB type="table" tableValues="0 1"/>
-          </feComponentTransfer> -->
-          <!-- <feDisplacementMap
-            in2="turbulence"
-            in="SourceGraphic"
-            scale="20"
-            xChannelSelector="A"
-            yChannelSelector="G"
-             /> -->
-        </filter>
-    
-        <image xlink:href={src} width="100%" height="100%" x="0" y="0" 
-           filter="url(#displacementFilter)"></image>
     </svg>
     </div>
   </details>
@@ -416,11 +381,14 @@ const changeCanv = (ev) => {
           <use xlink:href ="#img4" transform="scale(.25)" />
         </svg>
     </div>
-  </details>
+  </details> -->
 
 
   <div class="buttons">
-    <input oninput={update} bind:value={ugol} class="ugol" type="range" step="0.1" min="0" max={2*Math.PI} /> - предел
+    min: <input oninput={update} bind:value={min} class="min" type="range" min="0" max={cwidth} />
+    max: <input oninput={update} bind:value={max} class="max" type="range" min="0" max={cheight} />
+
+    <!-- <input oninput={update} bind:value={ugol} class="ugol" type="range" step="0.1" min="0" max={2*Math.PI} /> - предел
     <input list="ice-cream-flavors" onchange={update} bind:value={matrixKind} class="matrixKind" type="text"  /> - matrixKind
     <datalist id="ice-cream-flavors">
       <option>[0, 1, 2]</option>
@@ -437,7 +405,7 @@ const changeCanv = (ev) => {
       <input type="checkbox" checked onchange={changeImg} /> - Image
       <input type="checkbox" checked onchange={changeCanv} /> - Canvas
     </fieldset>
-    <input onchange={update} bind:value={povKind} class="povKind" type="number" step="1" min="0" max="2" /> - вариант поворота
+    <input onchange={update} bind:value={povKind} class="povKind" type="number" step="1" min="0" max="2" /> - вариант поворота -->
 
     <fieldset>Включать фильтры
       {#each ARR as k}
@@ -447,8 +415,8 @@ const changeCanv = (ev) => {
     {/each}
     </fieldset>
 
-    <button class="anticon anticon-info" aria-label="info"></button>
-    <button class="anticon anticon-down-circle-o" aria-label="down"></button>
+    <!-- <button class="anticon anticon-info" aria-label="info"></button>
+    <button class="anticon anticon-down-circle-o" aria-label="down"></button> -->
   </div>
 
   <details class="svetof" open>
@@ -466,14 +434,14 @@ const changeCanv = (ev) => {
   </details>
 
 
-  <ul>
+  <!-- <ul>
     <li>
       <a href="https://github.com/texel-org/color#readme" target="_blank" rel="noreferrer">color</a> Минимальная и современная библиотека цветов для JavaScript.
     </li>
     <li>
       <a href="https://github.com/claytongulick/quickhull#readme" target="_blank" rel="noreferrer">quickhull</a> Реализация алгоритма QuickHull на чистом JavaScript для поиска наименьшего многоугольника, охватывающего набор точек.
     </li>
-  </ul>
+  </ul> -->
 
   <p class="read-the-docs">
   </p>
