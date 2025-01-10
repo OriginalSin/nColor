@@ -38,11 +38,26 @@ float chess1(vec2 uv, float mn, float mx) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 	vec2 uv = fragCoord.xy / iResolution.xy * SCALE;
+	// vec2 uv = fragCoord.xy;
     // vec3 color = vec3(chess1(uv, 0., 1. / 6.));
     vec3 color = vec3(1., 0., 0.);
-    float x = floor(uv.x * dx);
-    float y = floor(uv.y * dy);
-    fragColor = vec4(vec3(data[int(x*dy + y)]) , 1.0);
+    float x = floor(uv.x * dx*3.);
+    float y = floor(uv.y * dy*3.);
+    // fragColor = vec4(vec3(data[int(x*dy + y)]) , 1.0);
+    if (mod(x, 3.) == 1. && mod(y, 3.) == 1.){
+        float x1 = floor((x - 1.) /3.);
+        float y1 = floor(dy - 1. - (y - 1.) /3.);
+        int ind = int(y1*dx  + x1 - 1.);
+        // 1 4 7 10
+        // 3 2 1 0
+        color = vec3(data[ind]);
+
+        // fragColor = vec4(v3 , 1.0);
+
+
+    }
+    fragColor = vec4(color , 1.0);
+
     // fragColor = vec4(vec3(data[int(floor(y*dx + x))]) , 1.0);
 
     // for(int x = 0; x < dx; x++) {
@@ -62,6 +77,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     //     }
     // }
     // if (uv.x < 1. / 6. &&  uv.y > 3. / 4.) color = vec3(0.); 
-	// fragColor = vec4(color , 1.0);
 }
 
