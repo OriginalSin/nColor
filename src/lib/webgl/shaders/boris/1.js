@@ -37,7 +37,7 @@ const getD_for = (m) => {
 
 const getD = (m, fill='') => {
     const d = [];
-    const dc = 3 * m[0].length;
+    const dc = 2 * m[0].length + 1;
 
     let pr;
     m.forEach((m1, r)=>{
@@ -56,4 +56,7 @@ const getD = (m, fill='') => {
 }
 
 // console.log('res', getD_for(m));
-console.log('res', getD(m));
+const d = getD(m, '');
+console.log('res', d.length, d[0].length, d);
+
+// node F:\gitGlobe\nColor\src\lib\webgl\shaders\boris\1.js
